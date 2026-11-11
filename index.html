@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WanderYear — Jan to Dec Vacation Atlas, Budget Calculator & Compare</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="ambient-bg" id="ambientBg"></div>
+
+  <!-- Navigation Header -->
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="#" class="brand">
+        <span class="brand-icon">🧭</span>
+        <div class="brand-text">
+          <span class="brand-name">WanderYear</span>
+          <span class="brand-tag">Jan–Dec Vacation Atlas</span>
+        </div>
+      </a>
+
+      <div class="nav-search">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text" id="searchInput" placeholder="Search place, activity, snow, beach, festival..." />
+        <button class="clear-search" id="clearSearch" title="Clear search" hidden>&times;</button>
+      </div>
+
+      <div class="nav-actions">
+        <button type="button" class="nav-tool-btn" id="openCalculatorBtn" onclick="openBudgetCalculatorModal()" title="Interactive Trip Budget Calculator">
+          <span>🧮 Cost Calculator</span>
+        </button>
+        <button type="button" class="nav-tool-btn" id="openCompareBtn" onclick="openCompareModal()" title="Compare 2 Places Side-by-Side">
+          <span>⚖️ Compare Places</span>
+        </button>
+        <button type="button" class="nav-tool-btn" id="openPackingBtn" onclick="openPackingModal()" title="Smart Packing Checklist">
+          <span>🧳 Packing List</span>
+        </button>
+        <button type="button" class="bucket-btn" id="bucketBtn" aria-label="Open saved trips">
+          <span>❤️ My Trips</span>
+          <span class="bucket-count" id="bucketCount">0</span>
+        </button>
+        <button class="theme-toggle" id="themeToggle" title="Toggle Dark/Light Mode" aria-label="Toggle Theme">
+          <span id="themeIcon">☀️</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-badge">✨ 100+ Best Vacation Destinations • Budget Calculator • Side-by-Side Compare</div>
+      <h1>Choose a Month, Discover the <span class="serif-italic">Best Places</span> to Visit</h1>
+      <p class="hero-subtitle">
+        Plan your year from <strong>January to December</strong>. Explore top-rated destinations, calculate exact trip costs, check custom packing lists, and compare destinations head-to-head.
+      </p>
+
+      <!-- Quick Feature Shortcut Pills -->
+      <div class="hero-quick-tools">
+        <button class="quick-tool-pill" onclick="openBudgetCalculatorModal()">
+          🧮 Estimate Trip Budget
+        </button>
+        <button class="quick-tool-pill" onclick="openCompareModal()">
+          ⚖️ Compare 2 Places (e.g. Gulmarg vs Auli)
+        </button>
+        <button class="quick-tool-pill" onclick="openPackingModal()">
+          🧳 Smart Month Packing List
+        </button>
+        <button class="quick-tool-pill" id="openAddPlaceHeroBtn">
+          ➕ Add Custom Destination
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sticky Month Selector Ribbon (January to December) -->
+  <section class="month-ribbon-wrapper" id="monthRibbonWrapper">
+    <div class="container">
+      <div class="month-ribbon-header">
+        <span class="ribbon-instruction">👇 Choose Any Month to Explore Handpicked Top Vacation Places:</span>
+        <div class="ribbon-mode-btns">
+          <button class="mode-pill active" id="singleMonthModeBtn">🎯 Focus Active Month</button>
+          <button class="mode-pill" id="allMonthsModeBtn">📅 View All 12 Months</button>
+        </div>
+      </div>
+      <div class="month-ribbon" id="monthRibbon" role="tablist" aria-label="Select Month">
+        <!-- Rendered by script.js -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Advanced Filters & Controls Bar -->
+  <section class="controls-section">
+    <div class="container controls-bar">
+      <!-- Region Filter -->
+      <div class="filter-group">
+        <span class="filter-label">Region:</span>
+        <div class="segmented-control" id="regionFilter">
+          <button class="seg-btn active" data-region="all">🌍 All</button>
+          <button class="seg-btn" data-region="India">🇮🇳 India</button>
+          <button class="seg-btn" data-region="International">✈️ International</button>
+        </div>
+      </div>
+
+      <!-- Vibe Filter -->
+      <div class="filter-group">
+        <span class="filter-label">Vibe:</span>
+        <div class="vibe-chips" id="vibeFilter">
+          <button class="vibe-chip active" data-vibe="all">All Vibes</button>
+          <button class="vibe-chip" data-vibe="Temples & Divine">🛕 Divine &amp; Temples</button>
+          <button class="vibe-chip" data-vibe="Snow & Mountains">🏔️ Snow &amp; Mountains</button>
+          <button class="vibe-chip" data-vibe="Beach & Islands">🏖️ Beach &amp; Islands</button>
+          <button class="vibe-chip" data-vibe="Heritage & Culture">🏛️ Heritage &amp; Culture</button>
+          <button class="vibe-chip" data-vibe="Nature & Wildlife">🌿 Nature &amp; Wildlife</button>
+          <button class="vibe-chip" data-vibe="Adventure">🎿 Adventure</button>
+        </div>
+      </div>
+
+      <!-- Companion / Travel Style Filter -->
+      <div class="filter-group">
+        <span class="filter-label">Best For:</span>
+        <select id="styleSelect" class="custom-select" aria-label="Filter by travel style">
+          <option value="all">👥 Everyone</option>
+          <option value="Couples">💑 Couples &amp; Honeymoon</option>
+          <option value="Family">👨‍👩‍👧‍👦 Family Friendly</option>
+          <option value="Friends">🎒 Friends &amp; Solo</option>
+          <option value="Budget">💸 Budget Friendly (&lt; ₹25k)</option>
+          <option value="Luxury">💎 Luxury Experience</option>
+        </select>
+      </div>
+
+      <!-- Sort By -->
+      <div class="filter-group">
+        <span class="filter-label">Sort:</span>
+        <select id="sortSelect" class="custom-select" aria-label="Sort destinations">
+          <option value="rank">🏆 Top Ranked First</option>
+          <option value="rating">⭐ Highest Rating</option>
+          <option value="budget-low">💰 Budget: Low to High</option>
+          <option value="budget-high">💎 Budget: High to Low</option>
+        </select>
+      </div>
+
+      <button class="view-btn" id="surpriseMeBtn" title="Pick a random top destination">
+        🎲 Surprise Me
+      </button>
+    </div>
+  </section>
+
+  <!-- Main Content: Active Month Spotlight or All Months -->
+  <main class="main-content container" id="monthsContainer">
+    <!-- Rendered dynamically by script.js -->
+  </main>
+
+  <!-- Year-at-a-Glance Summary Matrix -->
+  <section class="summary-section container">
+    <div class="summary-header">
+      <span class="section-eyebrow">ANNUAL TRAVEL CHEAT SHEET</span>
+      <h2>January to December Vacation Matrix</h2>
+      <p>Quick reference matrix with top recommendations for every month. Click any row to explore that month.</p>
+    </div>
+    <div class="table-responsive">
+      <table class="year-table" id="yearSummaryTable">
+        <thead>
+          <tr>
+            <th>Month</th>
+            <th>Season &amp; Weather</th>
+            <th>#1 Best in India 🇮🇳</th>
+            <th>More Top India Options</th>
+            <th>Top International ✈️</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="summaryTableBody">
+          <!-- Populated by script.js -->
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 1. Destination Full Guide & Itinerary Modal -->
+  <div class="modal-backdrop" id="detailModal" aria-hidden="true" onclick="if(event.target===this) closeDetailModal()">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button type="button" class="modal-close" id="closeModalBtn" onclick="closeDetailModal()" aria-label="Close modal">&times;</button>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+  <!-- 2. Interactive Trip Budget Calculator Modal -->
+  <div class="modal-backdrop" id="calculatorModal" aria-hidden="true" onclick="if(event.target===this) closeBudgetCalculatorModal()">
+    <div class="modal-card modal-medium-card" role="dialog" aria-modal="true">
+      <button type="button" class="modal-close" id="closeCalcModalBtn" onclick="closeBudgetCalculatorModal()" aria-label="Close calculator">&times;</button>
+      <div class="modal-inner">
+        <span class="section-eyebrow">SMART COST ESTIMATOR</span>
+        <h2 style="margin: 4px 0 12px;">🧮 Trip Budget &amp; Cost Calculator</h2>
+        <p style="color:var(--text-secondary); font-size:0.9rem; margin-bottom:16px;">
+          Calculate an accurate cost breakdown for flights, stays, food, and sightseeing based on your travel style.
+        </p>
+
+        <form id="calcForm" class="custom-form" onsubmit="event.preventDefault(); calculateTripBudget();">
+          <div class="form-row">
+            <div class="form-field">
+              <label>Select Destination</label>
+              <select id="calcDestinationSelect" onchange="calculateTripBudget()"></select>
+            </div>
+            <div class="form-field">
+              <label>Travel Style</label>
+              <select id="calcTravelStyle" onchange="calculateTripBudget()">
+                <option value="budget">🎒 Backpacker / Budget (Homestays, Trains, Street Food)</option>
+                <option value="comfort" selected>🛋️ Comfort / Mid-Range (3-Star Hotels, Cabs, Cafés)</option>
+                <option value="luxury">💎 Luxury (4/5-Star Resorts, Private Chauffeur, Fine Dining)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label>Number of Travelers</label>
+              <input type="number" id="calcTravelers" min="1" max="20" value="2" oninput="calculateTripBudget()" />
+            </div>
+            <div class="form-field">
+              <label>Trip Duration (Days)</label>
+              <input type="number" id="calcDays" min="1" max="30" value="5" oninput="calculateTripBudget()" />
+            </div>
+          </div>
+        </form>
+
+        <!-- Calculation Results -->
+        <div class="calc-results-card" id="calcResults">
+          <div class="calc-total-banner">
+            <div>
+              <span class="calc-label">ESTIMATED TOTAL TRIP COST</span>
+              <div class="calc-grand-total" id="calcGrandTotal">₹45,000</div>
+              <span class="calc-per-person" id="calcPerPerson">Approx. ₹22,500 per person</span>
+            </div>
+            <div class="calc-style-badge" id="calcStyleBadge">Comfort Style</div>
+          </div>
+
+          <div class="calc-breakdown-grid">
+            <div class="calc-item">
+              <span class="calc-item-icon">✈️</span>
+              <div>
+                <div class="calc-item-title">Travel &amp; Flights</div>
+                <div class="calc-item-amount" id="calcFlightCost">₹16,000</div>
+              </div>
+            </div>
+            <div class="calc-item">
+              <span class="calc-item-icon">🏨</span>
+              <div>
+                <div class="calc-item-title">Accommodation</div>
+                <div class="calc-item-amount" id="calcHotelCost">₹15,000</div>
+              </div>
+            </div>
+            <div class="calc-item">
+              <span class="calc-item-icon">🍲</span>
+              <div>
+                <div class="calc-item-title">Food &amp; Dining</div>
+                <div class="calc-item-amount" id="calcFoodCost">₹8,000</div>
+              </div>
+            </div>
+            <div class="calc-item">
+              <span class="calc-item-icon">🎟️</span>
+              <div>
+                <div class="calc-item-title">Activities &amp; Sightseeing</div>
+                <div class="calc-item-amount" id="calcActivitiesCost">₹6,000</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Side-by-Side Destination Comparison Modal -->
+  <div class="modal-backdrop" id="compareModal" aria-hidden="true" onclick="if(event.target===this) closeCompareModal()">
+    <div class="modal-card modal-large-card" role="dialog" aria-modal="true">
+      <button type="button" class="modal-close" id="closeCompareModalBtn" onclick="closeCompareModal()" aria-label="Close compare">&times;</button>
+      <div class="modal-inner">
+        <span class="section-eyebrow">HEAD-TO-HEAD COMPARISON</span>
+        <h2 style="margin: 4px 0 12px;">⚖️ Compare 2 Vacation Destinations</h2>
+        <p style="color:var(--text-secondary); font-size:0.9rem; margin-bottom:18px;">
+          Torn between two destinations? Compare weather, budget, travel vibes, and key highlights side-by-side.
+        </p>
+
+        <div class="compare-selectors-grid">
+          <div class="compare-pick-box">
+            <label for="compareSelectA"><strong>Place 1:</strong></label>
+            <select id="compareSelectA" class="custom-select" onchange="renderComparison()"></select>
+          </div>
+          <div class="compare-vs-badge">VS</div>
+          <div class="compare-pick-box">
+            <label for="compareSelectB"><strong>Place 2:</strong></label>
+            <select id="compareSelectB" class="custom-select" onchange="renderComparison()"></select>
+          </div>
+        </div>
+
+        <div id="compareResultContainer" class="compare-result-container">
+          <!-- Rendered by script.js -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Smart Month Packing Checklist Modal -->
+  <div class="modal-backdrop" id="packingModal" aria-hidden="true" onclick="if(event.target===this) closePackingModal()">
+    <div class="modal-card modal-medium-card" role="dialog" aria-modal="true">
+      <button type="button" class="modal-close" id="closePackingModalBtn" onclick="closePackingModal()" aria-label="Close packing">&times;</button>
+      <div class="modal-inner">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+          <div>
+            <span class="section-eyebrow">MONTHLY CLIMATE CHECKLIST</span>
+            <h2 style="margin: 4px 0;">🧳 Smart Packing Checklist</h2>
+          </div>
+          <select id="packingMonthSelect" class="custom-select" onchange="renderPackingList()">
+            <option value="january">January (Winter &amp; Snow)</option>
+            <option value="february">February (Late Winter)</option>
+            <option value="march">March (Spring Bloom)</option>
+            <option value="april">April (Hill Escapes)</option>
+            <option value="may">May (Highland Retreat)</option>
+            <option value="june">June (High Passes Open)</option>
+            <option value="july">July (Monsoon Magic)</option>
+            <option value="august">August (Harvest &amp; Waterfalls)</option>
+            <option value="september">September (Post-Monsoon)</option>
+            <option value="october">October (Autumn Festivals)</option>
+            <option value="november">November (Lantern &amp; Fairs)</option>
+            <option value="december">December (Festive Finale)</option>
+          </select>
+        </div>
+
+        <p style="color:var(--text-secondary); font-size:0.9rem; margin:12px 0 16px;">
+          Tick off essential clothes, gear, and travel documents tailored for this month's climate.
+        </p>
+
+        <div class="checklist-container" id="checklistContainer">
+          <!-- Rendered by script.js -->
+        </div>
+
+        <div class="checklist-actions">
+          <button class="explore-btn" onclick="addCustomPackingItem()">➕ Add Custom Item</button>
+          <button class="view-btn" onclick="resetPackingChecklist()">🔄 Reset Ticks</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. Add Custom Destination Modal -->
+  <div class="modal-backdrop" id="addPlaceModal" aria-hidden="true" onclick="if(event.target===this) closeAddPlaceModal()">
+    <div class="modal-card modal-form-card" role="dialog" aria-modal="true">
+      <button type="button" class="modal-close" id="closeAddModalBtn" onclick="closeAddPlaceModal()" aria-label="Close modal">&times;</button>
+      <div class="modal-inner">
+        <span class="section-eyebrow">CUSTOMIZE YOUR ATLAS</span>
+        <h2 style="margin: 4px 0 16px;">➕ Add a Custom Vacation Place</h2>
+        <form id="addPlaceForm" class="custom-form">
+          <div class="form-row">
+            <div class="form-field">
+              <label>Month to Visit *</label>
+              <select id="customMonth" required>
+                <option value="january">January</option>
+                <option value="february">February</option>
+                <option value="march">March</option>
+                <option value="april">April</option>
+                <option value="may">May</option>
+                <option value="june">June</option>
+                <option value="july">July</option>
+                <option value="august">August</option>
+                <option value="september">September</option>
+                <option value="october">October</option>
+                <option value="november">November</option>
+                <option value="december">December</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Region *</label>
+              <select id="customRegion" required>
+                <option value="India">🇮🇳 India</option>
+                <option value="International">✈️ International</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label>Place / City Name *</label>
+              <input type="text" id="customName" placeholder="e.g. Gulmarg or Bali" required />
+            </div>
+            <div class="form-field">
+              <label>Country / State *</label>
+              <input type="text" id="customCountry" placeholder="e.g. India or Indonesia" required />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label>Travel Vibe *</label>
+              <select id="customVibe">
+                <option value="Temples & Divine">🛕 Temples &amp; Divine Heritage</option>
+                <option value="Snow & Mountains">🏔️ Snow &amp; Mountains</option>
+                <option value="Beach & Islands">🏖️ Beach &amp; Islands</option>
+                <option value="Heritage & Culture">🏛️ Heritage &amp; Culture</option>
+                <option value="Nature & Wildlife">🌿 Nature &amp; Wildlife</option>
+                <option value="Adventure">🎿 Adventure</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Award / Badge</label>
+              <input type="text" id="customBadge" placeholder="e.g. ⭐ My Custom Pick" value="⭐ Custom Pick" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label>Ideal Duration</label>
+              <input type="text" id="customDuration" placeholder="e.g. 4–5 Days" value="4–5 Days" />
+            </div>
+            <div class="form-field">
+              <label>Est. Budget (₹)</label>
+              <input type="number" id="customBudgetNum" placeholder="e.g. 25000" value="25000" />
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label>Why Visit &amp; Highlights *</label>
+            <textarea id="customDesc" rows="3" placeholder="What makes this place amazing in this month?" required></textarea>
+          </div>
+
+          <div class="form-field">
+            <label>Top Attractions (comma separated)</label>
+            <input type="text" id="customHighlights" placeholder="e.g. Sunset Point, Boat Ride, Food Street" />
+          </div>
+
+          <div class="form-field">
+            <label>Photo URL (optional — leave blank for auto travel photo)</label>
+            <input type="url" id="customImage" placeholder="https://images.unsplash.com/..." />
+          </div>
+
+          <button type="submit" class="submit-custom-btn">✨ Save Place to Month</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Saved Trips Drawer -->
+  <aside class="bucket-drawer" id="bucketDrawer" aria-hidden="true">
+    <div class="drawer-header">
+      <h3>❤️ My Customized Trip Plan</h3>
+      <button class="drawer-close" id="closeDrawerBtn" aria-label="Close drawer">&times;</button>
+    </div>
+    <div class="drawer-body" id="bucketListContainer"></div>
+    <div class="drawer-footer">
+      <button class="clear-bucket-btn" id="clearBucketBtn">Clear All Saved Trips</button>
+    </div>
+  </aside>
+  <div class="drawer-backdrop" id="drawerBackdrop"></div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div>
+        <div class="brand">
+          <span class="brand-icon">🧭</span>
+          <span class="brand-name">WanderYear</span>
+        </div>
+        <p class="footer-note">Complete January to December Vacation Planner with Budget Estimator &amp; Comparison Tool.</p>
+      </div>
+      <div class="footer-links" id="footerMonthLinks">
+        <!-- Rendered by script.js -->
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
